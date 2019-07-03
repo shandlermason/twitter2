@@ -26,11 +26,15 @@
             dictionary = originalTweet;
         }
         self.idStr = dictionary[@"id_str"];
-        self.text = dictionary[@"text"];
-        self.favoriteCount = [dictionary[@"favorite_count"] intValue];
+        self.text = dictionary[@"text"]; //text
+        self.favoriteCount = [dictionary[@"favorite_count"] intValue]; 
         self.favorited = [dictionary[@"favorited"] boolValue];
         self.retweetCount = [dictionary[@"retweet_count"] intValue];
         self.retweeted = [dictionary[@"retweeted"] boolValue];
+        
+        
+        
+        
         
         // TODO: initialize user
         // initialize user
@@ -59,6 +63,7 @@
 /*Returns Tweets when initialized with an array of Tweet Dictionaries.
  This method comes in handy every time you get back a response
  with an array of Tweet dictionaries.*/
+
 + (NSMutableArray *)tweetsWithArray:(NSArray *)dictionaries{
     NSMutableArray *tweets = [NSMutableArray array];
     for (NSDictionary *dictionary in dictionaries) {

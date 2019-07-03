@@ -8,30 +8,65 @@
 
 #import "TimelineViewController.h"
 #import "APIManager.h"
+#import "TweetCell.h"
+#import "UIImageView+AFNetworking.h" //??
+#import "Tweet.h"
+#import "User.h"
 
-@interface TimelineViewController ()
-
+@interface TimelineViewController () <UITableViewDataSource, UITableViewDelegate>
+@property (nonatomic, strong) NSArray *tweetArray; //(tweets)
+@property (strong, nonatomic) IBOutlet UITableView *tableView;
+@property (nonatomic, strong) UIRefreshControl *refreshControl;
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
 @end
 
 @implementation TimelineViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+   
     
-    // Get timeline
+    self.tableView.dataSource=self;
+    self.tableView.delegate=self;
+    
+    [self fetchTimeLine];
+    
+    UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
+    [refreshControl addTarget:self action:@selector(beginRefresh:) forControlEvents:UIControlEventValueChanged];
+    [self.tableView insertSubview:refreshControl atIndex:0];
+    
+    //change color of refresh controller to light blue
+       [refreshControl setTintColor:[UIColor colorWithRed:102.0/255.0 green:204.0/255.0 blue:255.0/255.0 alpha:1.0]];
+    
+   
+}
+
+-(void)fetchTimeLine{
+       // Get timeline
     [[APIManager shared] getHomeTimelineWithCompletion:^(NSArray *tweets, NSError *error) {
         if (tweets) {
             NSLog(@"😎😎😎 Successfully loaded home timeline");
-            for (NSDictionary *dictionary in tweets) {
-                NSString *text = dictionary[@"text"];
+            
+            self.tweetArray = tweets;
+            
+            //loop through array of tweets, no need to allocate another array
+            for (Tweet *tweet in tweets) {
+                NSString *text = tweet.text;
                 NSLog(@"%@", text);
             }
+            [self.tableView reloadData];
         } else {
             NSLog(@"😫😫😫 Error getting home timeline: %@", error.localizedDescription);
         }
+        [self.refreshControl endRefreshing];
+        // Stop the activity indicator
+        // Hides automatically if "Hides When Stopped" is enabled
+        [self.activityIndicator stopAnimating];
+        //[self.tableView reloadData]; //??
     }];
+   // [getHomeTimelineWithCompletion resume];
+    //[task resume];
 }
-
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
@@ -47,5 +82,79 @@
 }
 */
 
+
+- (nonnull UITableViewCell *)tableView:(nonnull UITableView *)tableView cellForRowAtIndexPath:(nonnull NSIndexPath *)indexPath {
+   
+    TweetCell* cell = [self.tableView dequeueReusableCellWithIdentifier:@"TweetCell" forIndexPath:indexPath];
+    Tweet *tweet= self.tweetArray[indexPath.row];
+    
+    cell.tweet = tweet;
+    
+    //setting each label to its part, setting tweet to actual tweet
+    cell.name.text=tweet.user.name;
+    cell.actualTweet.text = tweet.text;
+    
+    cell.screenUsername.text=tweet.user.screenName;
+    
+    //NSString *profilePic = tweet.user.profilePicture;
+    
+    
+    //cell.date.text = tweet.
+    
+    //cell.date.text=tweet.;
+    //cell.retweets=tweet.retweetCount;
+    //cell.date.text=tweet.user.text;
+    //cell.likes.text=tweet.text;
+    //cell.retweets.text=tweet.retweeted.text;
+   // cell.replies.text=tweet.text;
+    
+    
+  
+    return cell;
+    
+}
+
+- (NSInteger)tableView:(nonnull UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    return self.tweetArray.count;
+}
+
+// Makes a network request to get updated data
+// Updates the tableView with the new data
+// Hides the RefreshControl
+- (void)beginRefresh:(UIRefreshControl *)refreshControl {
+ 
+    //GET request
+
+    // APIManager *getRequest = [[APIManager alloc] init];
+    [[APIManager shared] getHomeTimelineWithCompletion:^(NSArray *tweets, NSError *error) {
+        // handle successful tweet
+        // handle the error
+        if (tweets) {
+            NSLog(@"😎😎😎 Successfully loaded home timeline");
+            
+            self.tweetArray = tweets;
+            
+            //loop through array of tweets, no need to allocate another array
+            for (Tweet *tweet in tweets) {
+                NSString *text = tweet.text;
+                NSLog(@"%@", text);
+            }
+            [self.tableView reloadData];
+        } else {
+            NSLog(@"😫😫😫 Error getting home timeline: %@", error.localizedDescription);
+        }
+    }];
+    
+    //[getRequest getHomeTimelineWithCompletion:)(_tweetArray, NSError *error)completion:) ];
+    
+   
+    // Reload the tableView now that there is new data
+    [self.tableView reloadData];
+    
+    // Tell the refreshControl to stop spinning
+    [refreshControl endRefreshing];
+
+ 
+}
 
 @end

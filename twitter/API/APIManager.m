@@ -5,8 +5,12 @@
 //  Created by emersonmalca on 5/28/18.
 //  Copyright © 2018 Emerson Malca. All rights reserved.
 //
-
+/*To get from a resource, send a “GET” request.
+ To create a new instance of a resource (a tweet, an instagram post),
+ send a “POST” request. To modify an instance of a resource,
+ send a “PUT” request.*/
 #import "APIManager.h"
+#import "Tweet.h"
 
 static NSString * const baseURLString = @"https://api.twitter.com";
 static NSString * const consumerKey = @"5lUJuO5AUpPUCez4ewYDFrtgh";
@@ -49,27 +53,19 @@ static NSString * const consumerSecret = @"s5ynGqXzstUZwFPxVyMDkYh197qvHOcVM3kwv
 
 - (void)getHomeTimelineWithCompletion:(void(^)(NSArray *tweets, NSError *error))completion {
     
+
+    /*Create an array of Tweets to pass into the completion block, as below.*/
+    // Create a GET Request
     [self GET:@"1.1/statuses/home_timeline.json"
    parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, NSArray *  _Nullable tweetDictionaries) {
-       
-       // Manually cache the tweets. If the request fails, restore from cache if possible.
-       NSData *data = [NSKeyedArchiver archivedDataWithRootObject:tweetDictionaries];
-       [[NSUserDefaults standardUserDefaults] setValue:data forKey:@"hometimeline_tweets"];
-
-       completion(tweetDictionaries, nil);
-       
+       // Success
+       NSMutableArray *tweets  = [Tweet tweetsWithArray:tweetDictionaries];
+       completion(tweets, nil);
    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-       
-       NSArray *tweetDictionaries = nil;
-       
-       // Fetch tweets from cache if possible
-       NSData *data = [[NSUserDefaults standardUserDefaults] valueForKey:@"hometimeline_tweets"];
-       if (data != nil) {
-           tweetDictionaries = [NSKeyedUnarchiver unarchiveObjectWithData:data];
-       }
-       
-       completion(tweetDictionaries, error);
+       // There was a problem
+       completion(nil, error);
    }];
+    
 }
 
 @end

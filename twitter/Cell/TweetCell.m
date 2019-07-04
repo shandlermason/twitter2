@@ -15,6 +15,19 @@
     // Initialization code
 }
 
+//Action that happens when you tap the like button
+- (IBAction)didTapLike:(id)sender {
+    // TODO: Update the local tweet model
+    self.tweet.favorited = YES;
+    self.tweet.favoriteCount += 1;
+    // TODO: Update cell UI
+    // TODO: Send a POST request to the POST favorites/create endpoint
+    
+    
+    
+    
+}
+
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
     [super setSelected:selected animated:animated];
 

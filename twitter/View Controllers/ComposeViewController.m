@@ -9,19 +9,32 @@
 #import "APIManager.h"
 @interface ComposeViewController ()
 @property (weak, nonatomic) IBOutlet UITextView *tweetTextField;
+@property (weak, nonatomic) IBOutlet UITextView *countTextView;
+@property (weak, nonatomic) IBOutlet UILabel *countLabel;
 
 @end
 
 @implementation ComposeViewController
 
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view.
+    [self textViewDidBeginEditing:(UITextView *)_tweetTextField];
+    self.countTextView.delegate = self;
+    self.countLabel.text=@"140";
+   
+}
 
 - (void) textViewDidBeginEditing:(UITextView *) textView {
    //clears out text view when typing starts
     [textView setText:@""];
+    NSUInteger length, length2;
+    length = [textView.text length];
+    length2=length -1;
+    self.countLabel.text = [NSString stringWithFormat:@"%u", length2];
+    NSLog(@"Character count decreased");
     
 }
-
-
 
 
 //create an action for the “Close” button and the “Tweet” button
@@ -47,11 +60,7 @@
     
 }
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    // Do any additional setup after loading the view.
-    [self textViewDidBeginEditing:(UITextView *)_tweetTextField];
-}
+
 
 /*
 #pragma mark - Navigation

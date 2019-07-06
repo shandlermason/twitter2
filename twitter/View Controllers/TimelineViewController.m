@@ -12,6 +12,8 @@
 #import "UIImageView+AFNetworking.h" //??
 #import "Tweet.h"
 #import "User.h"
+#import "AppDelegate.h"
+#import "LoginViewController.h"
 
 @interface TimelineViewController () <UITableViewDataSource, UITableViewDelegate>
 @property (nonatomic, strong) NSArray *tweetArray; //(tweets)
@@ -30,6 +32,8 @@
     self.tableView.delegate=self;
     
     [self fetchTimeLine];
+    
+  
     
     UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
     [refreshControl addTarget:self action:@selector(beginRefresh:) forControlEvents:UIControlEventValueChanged];
@@ -96,23 +100,21 @@
     
     cell.screenUsername.text=tweet.user.screenName;
     
-    //NSString *profilePic = tweet.user.profilePicture;
+    cell.favoriteLabel.text = [NSString stringWithFormat:@"%d", tweet.favoriteCount];
+      cell.retweetLabel.text = [NSString stringWithFormat:@"%d", tweet.retweetCount];
+      cell.replyLabel.text = [NSString stringWithFormat:@"%d", tweet.replyCount];
+    //displays date
+    cell.date.text=tweet.createdAtString;
     
-    
-    //cell.date.text = tweet.
-    
-    //cell.date.text=tweet.;
-    //cell.retweets=tweet.retweetCount;
-    //cell.date.text=tweet.user.text;
-    //cell.likes.text=tweet.text;
-    //cell.retweets.text=tweet.retweeted.text;
-   // cell.replies.text=tweet.text;
-    
-    
-  
+    //convert string to URL to load images for profile pictures
+    NSURL *pP = [NSURL URLWithString:tweet.user.pP];
+    //adds image to UIImageView from API
+    [cell.profilePicture setImageWithURL:pP];
+
     return cell;
     
 }
+
 
 - (NSInteger)tableView:(nonnull UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return self.tweetArray.count;
@@ -145,16 +147,23 @@
         }
     }];
     
-    //[getRequest getHomeTimelineWithCompletion:)(_tweetArray, NSError *error)completion:) ];
-    
-   
     // Reload the tableView now that there is new data
     [self.tableView reloadData];
     
     // Tell the refreshControl to stop spinning
     [refreshControl endRefreshing];
-
  
+}
+
+- (IBAction)logoutTapped:(id)sender {
+    AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+    
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    LoginViewController *loginViewController = [storyboard instantiateViewControllerWithIdentifier:@"LoginViewController"];
+    appDelegate.window.rootViewController = loginViewController;
+
+[[APIManager shared] logout];
+
 }
 
 @end

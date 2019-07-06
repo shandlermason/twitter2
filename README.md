@@ -55,6 +55,7 @@ Please list two areas of the assignment you'd like to **discuss further with you
 Here's a walkthrough of implemented user stories:
 
 <img src='http://g.recordit.co/hImZrMGRJs.gif' title='Video Walkthrough of All the Features' width='' alt='Video Walkthrough' />
+<img src='http://g.recordit.co/2ck2AcNNgW.gif' title='App Icon and Launch Screen ' width='' alt='Video Walkthrough' />
 <img src='http://g.recordit.co/Zpz29teGPo.gif' title='Liking and Retweeting' width='' alt='Video Walkthrough' />
 <img src='http://g.recordit.co/2QLSRNXv1H.gif' title='Showing Like/Retweet/Post of Composed Tweet on Actual Twitter' width='' alt='Video Walkthrough' />
 <img src='http://g.recordit.co/N5qhgMKRt3.gif' title='Showing From a Different Orientation' width='' alt='Video Walkthrough' />
